@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+    <!-- 
+    Talk for J & Beyond, 2017
+    Your Joomla dev-ops, ci & cd toolbox
+    https://github.com/AndyGaskell/J_and_Beyond_2017 
+    -->
+    <head>
+        <meta charset="utf-8">
+
+        <title>Andy Gaskell - Your Joomla dev-ops, ci & cd toolbox</title>
+
+        <meta name="description" content="A talk about Joomla for J & Bayond 2017">
+        <meta name="author" content="Andy Gaskell">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="reveal.js/css/reveal.css">
+        <link rel="stylesheet" href="reveal.js/css/theme/moon.css" id="theme">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="reveal.js/lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( "link" );
+            link.rel = "stylesheet";
+            link.type = "text/css";
+            link.href = window.location.search.match( /print-pdf/gi ) ? "reveal.js/css/print/pdf.css" : "reveal.js/css/print/paper.css";
+            document.getElementsByTagName( "head" )[0].appendChild( link );
+            Reveal.configure({ slideNumber: true });
+        </script>
+        
+        <style>
+            img {
+                background-color: transparent !important;
+                border-width: 0px !important;
+                box-shadow: none !important;
+            }
+            .reveal{
+                color: #fff;
+            }
+            .reveal pre{
+                width: 100%;
+                font-size: 55%;
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }     
+            
+            
+            .col1of2 {
+                left:-8.33%;
+                text-align: left;
+                float: left;
+                width:50%;
+                z-index:-10;
+            }
+            .col2of2 {
+                left:31.25%;
+                top: 75px;
+                float: right;
+                text-align: right;
+                z-index:-10;
+                width:50%;
+            }
+            .col1of3, .col2of3, .col3of3 {
+                width:32%;
+                display: inline-block;
+                vertical-align: top !important;
+            }            
+           
+        </style>
+        
+
+        <!--[if lt IE 9]>
+        <script src="lib/js/html5shiv.js"></script>
+        <![endif]-->
+        
+        
+        <!--
+Your Joomla dev-ops, ci & cd toolbox
+http://jandbeyond.org/programme.html?view=session&id=409&return=L3Byb2dyYW1tZS5odG1s
+This talk will provide a gourmet buffet of information and ideas for dev-ops, continuous integration and continuous deployment. It"ll include a good spread of practical details on tools and systems, and their use with Joomla, that you can take home and try with your Joomla development and deployment. It"ll include, among other aspects...
+- Deployment automation
+- Using Joomla docker containers
+- Automated deployment with Akeeba UNiTE
+- Scripting options and choosing between node.js, shell and php
+- Headless browser options like Casper, PhantomJS and Zombie.js
+- CI platform options, like GitLab, Bamboo, Travis, Jenkins and GoCD
+- Simple monitoring solutions
+- Diagnostic tools
+The talk will be supported by a repository of examples code and notes in GitHub.         
+        
+        
+https://github.com/hakimel/reveal.js#markdown
+ifle:///home/andy/J&B_2017/slides/slides.html#/6
+
+
+
+        -->
+    </head>
+    <body>
+        <div class="reveal">
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+<section data-background-image="images/cacti/small_DSC09510.JPG">
+    <h1>Your Joomla dev-ops, ci & cd toolbox</h1>
+    <h2>Hi, I'm Andy</h2>
+</section>
+<section data-background-image="images/cacti/small_DSC09511.JPG">
+    <h1>Who?</h1>
+</section>
+<section>
+    <h2>Who?...</h2>
+    <ul>
+        <li>Web developer from the UK with 20 years experience</li>
+        <li>From London, living in Aberdeen via Edinburgh, Sydney and Glasgow</li>
+        <li>Developing with Joomla for 10 years, mainly doing App backends & APIs last couple of years</li>
+        <li>twitter: AndyGasman</li>
+        <li>email: ag@ssofb.co.uk</li>
+    </ul>
+</section>  
+  
+<section data-background-image="images/map.png">
+</section>
+<section data-background-image="images/office1.jpg">
+</section>
+<section data-background-image="images/office2.jpg">
+</section>
+<section data-background-image="images/office3.jpg">
+</section>
+
+<section data-background-image="images/cacti/small_DSC09503.JPG">
+    <h1>Intro...</h1>
+</section>
+<section>
+    <h2>Why this talk?...</h2>
+    <p>Just a bit of context and background</p>
+    <ul>
+        <li>Developing app backends</li>
+        <li>Each backend is a Joomla CMS with and API, CMS plus extentions</li>
+        <li>Scale out and up, many backends, rolling updates, many users</li>
+        <li>Start up from London, small team, gotta work smart</li>
+    </ul>    
+    <aside class="notes">
+            
+    </aside>
+</section>                                
+<section>
+    <h2>What will we cover?</h2>
+    <p>A little bit of a lot...</p>
+    <ul>
+        <li>Devops</li>
+        <li>Continous integration</li>
+        <li>Continous deployment</li>
+    </ul>      
+    <aside class="notes">
+            
+    </aside>
+</section>    
+<section>
+    <h2>What is DevOps?</h2>
+    <img src="images/devops-process-outline.png">
+</section>
+<section>
+    <h2>Preface</h2>
+    <p>Some quick notes on the talk<p>
+    <ul>
+        <li>All notes and code based on Debian / Ubuntu</li>
+        <li>Code and examples in Github</li>
+        <li>Just ask anytime with questions</li>
+        <li>This is not everything!</li>
+    </ul>
+    <aside class="notes">
+            
+    </aside>
+</section>  
+
+
+<section data-background-image="images/cacti/small_DSC09413.JPG">
+    <h1>Automation, Geting Started</h1>
+</section>
+<section>
+    <h2>Scripting</h2>
+    <ul>
+        <li>bash?</li>
+        <li>php?</li>
+        <li>node.js?</li>
+    </ul>
+    <aside class="notes">
+    who are you? what fits?
+    </aside>
+</section>
+
+
+<section>
+    <h2>Basic devops Ninja skills</h2>
+    
+    <p>Find large files, list with path and size...</p>
+    <pre><code>find . -type f -size +50M -exec ls -lh {} \; | awk "{ print $9 ": " $5 }"</code></pre>
+
+    <p>Find text in php files...</p>
+    <pre><code>grep -rnw --include="*.php" . myneedle</code></pre>
+
+    <p>Find text in php and ini files...</p>
+    <pre><code>grep --include=\*.{php,ini} -rnw . -e "myneedle"</code></pre>
+
+    <aside class="notes">
+
+    </aside>
+</section>
+
+<section>
+    <h2>Automation Options</h2>
+    <ul>
+        <li>Scripts</li>
+        <li>Taskrunner</li>
+        <li>CI/CD system</li>
+        <li>Headless browser</li>
+    </ul>
+    <aside class="notes">
+    who are you? what fits?
+    </aside>
+</section>
+
+
+
+
+<section data-background-image="images/cacti/small_DSC09591.JPG">
+    <h1>Automating Updates</h1>
+</section>
+<section>
+    <h2>Joomla CLI</h2>
+    <p>Quite new, but really handy </p>
+    <ul>
+        <li>Calls joomla code directly</li>
+        <li>https://github.com/joomla-projects/cli-update</li>
+        <li>update core</li>
+        <li>install extentions</li>
+        <li>update extentions</li>
+        <li>remove extentions</li>
+    </ul>
+    <aside class="notes">
+
+    </aside>
+</section>     
+
+<section>
+    <h2>Automate Updates</h2>
+    <ul>
+        <li>Git hook scripts</li>
+        <li>Using git-ftp</li>
+    </ul>
+
+    <aside class="notes">
+    </aside>
+</section>   
+
+
+<section>
+    <h2>Git hook scripts</h2>
+    <ul>
+        <li>Can build a whole ci/cd system with git hooks</li>
+        <li>Enviroment variables are handy, but can make debug tricky</li>
+        <li>Start out with a simple message hook</li>
+        <li>Try initiating tests from hooks</li>
+        <li>Don't forget to make the hook scripts executable</li>
+        <li>Look at the sample files in ".git/hooks"</li>        
+    </ul>
+    
+
+    <aside class="notes">
+    </aside>
+</section> 
+
+<section>
+    <h2>Git hooks</h2>
+    <p>On the server, useful ones are...</p>
+    <ul>
+        <li>pre-receive: great for starting unit tests and checks</li>
+        <li>post-receive: run tests or deploy</li>
+        <li>commit: like pre-receive but branch by branch</li>
+    </ul>
+    <p>Locally, useful ones are...</p>
+    <ul>
+        <li>pre-commit: good for checking commits</li>
+        <li>commit-msg: handy to add automated info to the message, test results etc</li>
+        <li>post-commit: good for sending notifications or updating a dashboard</li>
+    </ul>    
+
+    <aside class="notes">
+    </aside>
+</section> 
+
+<section>
+    <h2>git-ftp (the bash one)</h2>
+    <ul>
+        <li>https://github.com/git-ftp/git-ftp</li>
+        <li>Lovely tool for deployment</li>
+        <li>Can just upload the changed files</li>
+        <li>Works really nicely as a post-receive git hook</li>
+    </ul>
+    <p>Upload all</p>
+    <pre><code>git ftp init</code></pre>
+    <p>Upload changes</p>
+    <pre><code>git ftp catchup</code></pre>    
+    <aside class="notes">
+    </aside>
+</section> 
+
+
+
+
+
+<section data-background-image="images/cacti/small_DSC09530.JPG">
+    <h1>Automate Deployment</h1>
+</section>
+<section>
+    <h2>Deployment Automation Options</h2>
+    <ul>
+        <li>Akeeba UNiTE</li>
+        <li>Docker</li>
+        <li>Jenkins and Travis</li>
+        <li>Vagrant</li>
+        <li>sym linked directories</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section>    
+    
+
+<section>
+    <h2>Akeeba UNiTE</h2>
+    <img src="images/unite_256.png" />
+    <ul>
+        <li>Extracts jpa files</li>
+        <li>xml config</li>
+        <li>Put xml files in inbox diretory</li>
+        <li>Run on php cli php unite/unite.php</li>
+        <li>Great for mass migrations</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section> 
+
+<section>
+    <h2>Getting started with Akeeba UNiTE</h2>
+    <ul>
+        <li>Download from https://www.akeebabackup.com</li>
+        <li>Extract the zip</li>
+        <li>Set some paths in the config.php</li>
+        <li>Write xml files or use a base</li>
+        <li>Simple automation or more complex</li>
+        <li>Really nice inbox feature, just chuck xml files in a directory</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section>   
+
+<section>
+    <h2>UNiTE XML config example</h2>
+<pre><code><xml version="1.0" encoding="UTF-8"?>
+  <unite scriptong="01_default">
+    <siteInfo>
+      <package>base.jpa</package>
+      <deletePackage>0</deletePackage>
+      <localLog>MY_SYSNAME.log</localLog>
+      <emailSysop>1</emailSysop>
+      <name>MY_SITE_NAME</name>
+      <email>email@example.com</email>
+      <absolutepath>MY_SITE_DIR</absolutepath>
+    </siteInfo>
+    <databaseInfo>
+      <database name="site">
+        <changecollation>0</changecollation>
+        <dbdriver>mysqli</dbdriver>
+        <dbhost>localhost</dbhost>
+        <dbuser>MY_DB_USERNAME</dbuser>
+        <dbpass>MY_DB_PASSWORD</dbpass>
+        <dbname>MY_BE_NAME</dbname>
+        <dbprefix>MY_PREFIX</dbprefix>
+      </database>
+    </databaseInfo>
+  </unite>
+</xml></code></pre>
+    <aside class="notes">
+
+    </aside>
+</section>          
+    
+<section>
+    <h2>UNiTE for creating new Joomla sites</h2>
+    <ul>
+        <li>Have multiple jpa seeds</li>
+        <li>Copy a base xml, substitute in site details</li>
+        <li>Run UNiTE</li>
+    </ul>
+    <aside class="notes">
+
+    </aside>
+</section>   
+
+<section>
+    <h2>UNiTE script</h2>
+    <pre><code><?php
+echo "Hello, this is a script to create a Joomla site from a jpa \n";
+echo "It requires three parameters: \n";
+echo "Parameter 1: full site name, eg 'Hill Valley' \n";
+echo "Parameter 2: system site name, lower case no spaces, eg 'hillvalley' \n";
+echo "Parameter 3: db password \n";
+
+$sitename = $argv[1];
+$sysname = $argv[2];
+$dbpass = $argv[3];
+
+echo "full site name: " . $sitename. "\n";
+echo "system site name: " . $sysname. "\n";
+
+if (!$sitename OR !$sitename OR !$dbpass ) {
+    echo "Sorry, you are missing a parameter \n";
+    exit;
+}
+
+if ( !file_exists( "unite" ) ) {
+    echo "Missing UNiTE \n";
+    exit;
+}
+
+# TODO: add code to set up sub-domain
+# TODO: add code to create db user and db
+
+# read in the base
+$base_xml = file_get_contents( "akeeba_unite_base.xml" );
+
+$old_word = array(
+    "MY_SYSNAME", 
+    "MY_SITE_NAME",
+    "MY_SITE_DIR",
+    "MY_DB_USERNAME",
+    "MY_DB_PASSWORD",
+    "MY_DB_NAME",
+    "MY_PREFIX",    
+);
+$new_word = array(
+    $sysname, 
+    $sitename,
+    $sysname,
+    $sysname, 
+    $dbpass, 
+    $sysname, 
+    "j" . rand(100, 999), 
+);
+
+# write the new xml file to the outboox
+$base_xml = str_replace($old_word, $new_word, $base_xml);
+
+mkdir($sysname);
+
+file_put_contents( "unite/inbox/" . $sysname . ".xml", $base_xml );
+
+$unite_output_array = array();
+exec("php unite/unite.php", $unite_output_array);
+print_r($unite_output_array);
+?></code></pre>
+    <aside class="notes">
+
+    </aside>
+</section>   
+
+
+<section>
+    <h2>Jenkins and Travis</h2>
+    <ul>
+        <li>Jenkins was a the original, many features and integrations, system driven config and xml</li>
+        <li>Travis, looked like a replacement, yml config file driven</li>
+        <li>Jenkins then introduced jenkinsfile, config driven</li>
+        <li>Big overlap, but maybe Jenkins for complex projects, Travis for less complicated</li>
+    </ul>
+    <aside class="notes">
+
+    </aside>
+</section>  
+
+
+<section>
+    <img src="images/docker-logo.png" style="max-width: 70%;"/>
+    <ul>
+        <li>Easy to create Joomla containers</li>
+        <li>Great for dev</li>
+        <li>Great for testing extentions</li>
+        <li>Production use?</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section> 
+
+
+<section>
+    <h2>Getting started with docker</h2>
+    <p>Install docker community edition</p>
+    <p>Start a container...</p>
+    <pre><code>docker run --name some-joomla --link some-mysql:mysql -d joomla</code></pre>
+    <p>More info at https://hub.docker.com/_/joomla/</p>
+    <aside class="notes">
+
+    </aside>
+</section>                    
+        
+<section>
+    <h2>Editing docker containers</h2>
+    <ul>
+        <li>Lots of docker containers on https://github.com/joomla-projects</li>
+        <li>Simple yml file</li>
+        <li>Can host them on docker hub</li>
+        <li>Can kick off builds with Github integrations</li>
+        <li>Some sort of Docker support in most other CI / CD systems</li>
+        <li>docker compose</li>
+    </ul>
+    <aside class="notes">
+
+    </aside>
+</section>     
+
+<section>
+    <img src="images/vagrant.png" style="max-width: 60%;"/>
+    <ul>
+        <li>Easy to create Joomla containers</li>
+        <li>Great for dev</li>
+        <li>Production use?</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section> 
+
+<section>
+    <h2>What is Vagrant and why use it?</h2>
+    <ul>
+        <li>Great pre-made images</li>
+        <li>JoomlaTools https://github.com/joomlatools/joomlatools-vagrant</li>
+        <li>Symlink your code into the box</li>
+        <li>Most images include dev tools like phpMyAdmin, WebGrind, xDebug, Z-Ray, etc</li>
+    </ul>
+    <aside class="notes">
+
+    </aside>
+</section>      
+
+<section>
+    <h2>Getting started with Vagrant</h2>
+    <p>Install VirtualBox and Vagrant</p>
+    <p>Download it...</p>
+    <pre><code>vagrant init joomlatools/box</code></pre>
+    <p>Run it...</p>
+    <pre><code>vagrant up</code></pre>        
+    <p>SSH onto it...</p>
+    <pre><code>vagrant ssh</code></pre>        
+    <p>Create a site...</p>
+    <pre><code>joomla site:create mysite</code></pre>   
+    <aside class="notes">
+
+    </aside>
+</section>                    
+              
+
+<section>
+    <h2>Sym linked directories</h2>
+    <ul>
+        <li>Good for lots of instances</li>
+        <li>Makes updates a little harder</li>
+        <li>Read only file system can cause issues</li>
+    </ul>
+    <pre><code>instances
+  - parents
+    - alpha
+    - beta
+    - prod 
+  - children
+    - tom
+    - richard
+    - harry
+    - whatever</code></pre> 
+    <aside class="notes">
+    </aside>
+</section> 
+        
+<section>
+    <h2>Sym link scripting - create</h2>
+    <pre><code>
+#!/bin/sh
+echo "Hello, this is a script to create a Joomla site from a symlinks"
+echo "It requires three parameters:"
+echo "Parameter 1: full site name, eg 'Hill Valley'"
+echo "Parameter 2: system site name, lower case no spaces, eg 'hillvalley'"
+echo "Parameter 3: source, eg 'live'"
+
+# get params
+sitename=$1
+sysname=$2
+source=$3
+echo "sitename: $sitename "
+echo "sysname: $sysname "
+echo "source: $source "
+
+# create the db user and db
+mysql -u root --password=mypassword -N -e "CREATE USER '$sysname'@'localhost' IDENTIFIED BY 'password';"
+mysql -u root --password=mypassword -N -e "GRANT USAGE ON *.* TO '$sysname'@'localhost' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;"
+mysql -u root --password=mypassword -N -e "CREATE DATABASE IF NOT EXISTS $sysname;"
+mysql -u root --password=mypassword -N -e "GRANT ALL PRIVILEGES ON $sysname.* TO $sysname@'localhost';"
+
+# do a dump n load
+mysqldump -h localhost -u root --password=mypassword $source > $sysname.sql 
+mysql -h localhost -u root --password=mypassword $sysname < $sysname.sql 
+
+# create folders
+mkdir symlink_demo/children/$sysname
+mkdir symlink_demo/children/$sysname/images
+mkdir symlink_demo/children/$sysname/tmp
+mkdir symlink_demo/children/$sysname/cache
+mkdir symlink_demo/children/$sysname/administrator
+mkdir symlink_demo/children/$sysname/administrator/cache
+mkdir symlink_demo/children/$sysname/administrator/logs
+
+# read in the config
+configbase=`cat symlink_demo/parents/$source/configuration.php`
+echo "$configbase"
+configbase="${configbase//parents/children}"
+configbase="${configbase//$source/$sysname}"
+echo "$configbase"
+echo $configbase > symlink_demo/children/$sysname/configuration.php
+
+# copy files
+cp symlink_demo/parents/$source/htaccess.txt symlink_demo/children/$sysname/
+cp symlink_demo/parents/$source/robots.txt symlink_demo/children/$sysname/
+cp symlink_demo/parents/$source/index.php symlink_demo/children/$sysname/
+cp symlink_demo/parents/$source/administrator/index.php symlink_demo/children/$sysname/administrator/
+
+
+cd symlink_demo/children/$sysname
+pwd
+
+# create symlinks
+ln -s ../../parents/$source/bin .
+ln -s ../../parents/$source/cli .
+ln -s ../../parents/$source/components .
+ln -s ../../parents/$source/includes .
+ln -s ../../parents/$source/language .
+ln -s ../../parents/$source/layouts .
+ln -s ../../parents/$source/libraries .
+ln -s ../../parents/$source/media .
+ln -s ../../parents/$source/modules .
+ln -s ../../parents/$source/plugins .
+ln -s ../../parents/$source/templates .
+cd administrator
+pwd
+ln -s ../../../parents/$source/administrator/components .
+ln -s ../../../parents/$source/administrator/help .
+ln -s ../../../parents/$source/administrator/includes .
+ln -s ../../../parents/$source/administrator/language .
+ln -s ../../../parents/$source/administrator/manifests .
+ln -s ../../../parents/$source/administrator/modules .
+ln -s ../../../parents/$source/administrator/templates .        
+    </code></pre>
+    <aside class="notes">
+
+    </aside>
+</section>     
+
+<section>
+    <h2>Sym link scripting - re-point</h2>
+    <pre><code>
+#!/bin/sh
+echo "Hello, this is a script to create a Joomla site from a symlinks"
+echo "It requires two parameters:"
+echo "Parameter 1: source, eg live or beta"
+echo "Parameter 2: target, eg site1"
+
+source=$1
+target=$2
+
+# cd into the target
+cd symlink_demo/children/$target
+pwd
+
+# create symlinks
+ln -s -f ../../parents/$source/bin .
+ln -s -f ../../parents/$source/cli .
+ln -s -f ../../parents/$source/components .
+ln -s -f ../../parents/$source/includes .
+ln -s -f ../../parents/$source/language .
+ln -s -f ../../parents/$source/layouts .
+ln -s -f ../../parents/$source/libraries .
+ln -s -f ../../parents/$source/media .
+ln -s -f ../../parents/$source/modules .
+ln -s -f ../../parents/$source/plugins .
+ln -s -f ../../parents/$source/templates .
+cd administrator
+pwd
+ln -s -f ../../../parents/$source/administrator/components .
+ln -s -f ../../../parents/$source/administrator/help .
+ln -s -f ../../../parents/$source/administrator/includes .
+ln -s -f ../../../parents/$source/administrator/language .
+ln -s -f ../../../parents/$source/administrator/manifests .
+ln -s -f ../../../parents/$source/administrator/modules .
+ln -s -f ../../../parents/$source/administrator/templates .   
+    </code></pre>
+    <aside class="notes">
+
+    </aside>
+</section>     
+
+
+
+
+<section data-background-image="images/cacti/small_DSC09603.JPG">
+    <h1>Automation, Headless Browsers</h1>
+</section>
+
+<section>
+    <h2>Headless browsers</h2>
+    <p>Many options, Selenium, PhantomJS, Nightmare</p>
+    <p>Many drivers, CasperJS, CodeceptJS, Zombie.js</p>
+    <ul>
+        <li>Automate tests</li>
+        <li>Automate tasks</li>
+        <li>Script things a human does</li>
+    </ul>
+
+    <aside class="notes">
+    </aside>
+</section>   
+
+<section>
+    <h2>CasperJS</h2>
+    <p>Easy to set-up</p>
+    <ul>
+        <li>Easy to set-up</li>
+        <li>https://github.com/casperjs/casperjs/tree/master/samples</li>
+        <li>Fairly easy to write scripts</li>
+    </ul>
+
+    <aside class="notes">
+    </aside>
+</section>   
+
+<section>
+    <h2>CasperJS Joomla update example</h2>
+    <pre><code>var casper = require("casper").create({
+    verbose: true,
+    //logLevel: "debug"
+});
+
+var current_version = "3.7.2";
+
+// increase the viewport
+casper.options.viewportSize = {width: 1200, height: 1200};
+
+// get a datestamp field
+var m = new Date();
+var now = m.getUTCFullYear() +"-"+ (m.getUTCMonth()+1) +"-"+ m.getUTCDate() + "_" + m.getUTCHours() + "-" + m.getUTCMinutes();
+
+casper.echo("CasperJS Update Script Started");
+
+// get the first passed in value
+var domain = casper.cli.get(0);
+var username = casper.cli.get(1);
+var password = casper.cli.get(2);
+
+casper.echo("domain: " + domain);
+casper.echo("Date and Time: " + now);
+
+var img_sufix = "_" + domain + "_" + now;
+
+
+casper.start("https://" + domain + "/administrator", function() {
+    // login
+    this.fill("form#form-login", { 
+        username: " + username + ",
+        passwd: " + password + "
+    }, true);
+});
+
+
+casper.then(function() {
+    // grab the screen
+    this.capture("screencaptures/jadmin1" + img_sufix + ".png");
+});
+
+// print the version
+casper.then(function() {
+    var footer_text = this.fetchText("#status .btn-toolbar .btn-group p");
+    this.echo("Footer is : " + footer_text);
+    var alert_message_is_current_version = footer_text.search(current_version);
+    casper.echo("alert_message_is_current_version: " + alert_message_is_current_version); 
+    if ( alert_message_is_current_version == -1 ) {
+        casper.echo("**** Not the current version " + current_version + " ****");   
+
+        casper.then(function() {
+            // go to the update page
+            casper.open("https://" + domain + "/administrator/index.php?option=com_joomlaupdate").then(function() {
+                this.capture("screencaptures/jadmin2" + img_sufix + ".png");
+                casper.echo("logged in");
+            });
+        });
+
+        casper.then(function() {
+            // grab the screen
+            this.capture("screencaptures/jadmin3" + img_sufix + ".png");
+            casper.echo("capture screen");
+        });
+
+        casper.then(function() {
+            // Click on purge button
+            this.click("#toolbar-purge button");
+            casper.echo("purged updates");
+        });
+
+        casper.then(function() {
+            // grab the screen
+            this.capture("screencaptures/jadmin4" + img_sufix + ".png");
+            casper.echo("capture screen");    
+        });
+
+        casper.then(function() {
+            // see if the update button is there
+            if(!casper.exists("#adminForm button")){
+                // button does not exist
+                casper.echo("update button does not exist, now exit");
+                this.exit();
+            } else {
+                // Click on update button
+                this.click("#adminForm button");
+                casper.echo("clicked update");    
+            }    
+        });
+
+        casper.then(function() {
+            casper.wait(40000, function() {
+                this.echo("Waited some seconds");
+            });
+        });
+
+        casper.then(function() {
+            // grab the screen
+            this.capture("screencaptures/jadmin5" + img_sufix + ".png");
+            casper.echo("capture screen");    
+        });
+
+        casper.then(function() {
+            // go to the update page
+            casper.open("https://" + domain + "/administrator/index.php?option=com_installer&view=database").then(function() {
+                this.capture("screencaptures/jadmin6" + img_sufix + ".png");
+                casper.echo("logged in");
+            });
+        }); 
+    }
+});
+
+casper.run(); </code></pre>
+    <aside class="notes">
+    </aside>
+</section>  
+
+
+<section>
+    <h2>CodeceptJS</h2>
+    <ul>
+        <li>Very easy to write</li>
+        <li>Mainly for acceptance testing</li>
+        <li>Just like Codecpetion</li>
+    </ul>
+    <pre><code>codeceptjs run mytest.js --steps</code></pre>
+    <aside class="notes">
+    </aside>
+</section>   
+
+<section>
+    <h2>CodeceptJS Joomla update example</h2>
+    <pre><code>Feature('CodeceptJS demo');
+
+Scenario('Update Joomla', (I) => {
+    I.amOnPage('http://localhost/joomla_test/administrator/');
+    I.see('Go to site home page');
+    I.saveScreenshot('login_form.png');
+    I.fillField('username', 'joomla_test');
+    I.fillField('passwd', 'password');
+    I.click('Log in');  
+    I.saveScreenshot('logged_in.png');
+    I.amOnPage('http://localhost/joomla_test/administrator/index.php?option=com_joomlaupdate');
+    I.saveScreenshot('update_screen_pre.png');
+    I.see('Check for Updates');
+    I.click('Check for Updates');    
+    I.saveScreenshot('update_screen_check.png'); 
+    I.see('Checked for updates')
+    I.click('Install the Update');
+    I.saveScreenshot('update_screen_install.png'); 
+    I.see('successfully updated');
+    I.saveScreenshot('update_screen_done.png'); 
+})</code></pre>
+    <aside class="notes">
+    </aside>
+</section>  
+
+<section>
+    <h2>CodeceptJS Joomla update example - output</h2>
+    <pre><code>codeceptjs run codeceptjs_joomla_update.js --steps
+CodeceptJS v0.6.2
+Using test root "/var/www/html/piota/devops_tools/codeceptjs_tests"
+
+CodeceptJS demo --
+ Update Joomla
+ ??? I am on page "http://localhost/joomla_test/administrator/"
+ ??? I see "Go to site home page"
+ ??? I save screenshot "login_form.png"
+ ??? I fill field "username", "joomla_test"
+ ??? I fill field "passwd", "password"
+ ??? I click "Log in"
+ ??? I save screenshot "logged_in.png"
+ ??? I am on page "http://localhost/joomla_test/administrator/index.php?option=com_joomlaupdate"
+ ??? I save screenshot "update_screen_pre.png"
+ ??? I see "Check for Updates"
+ ??? I click "Check for Updates"
+ ??? I save screenshot "update_screen_check.png"
+ ??? I see "Checked for updates"
+ ??? I click "Install the Update"
+ ??? I save screenshot "update_screen_install.png"
+ ??? OK in 35461ms
+
+OK  | 1 passed   // 35s</code></pre>
+    <aside class="notes">
+    </aside>
+</section>  
+
+
+
+<section data-background-image="images/cacti/small_DSC09514.JPG">
+    <h1>Monitoring</h1>
+</section>
+<section>
+    <h2>Monitoring - Systems</h2>
+    <ul>
+        <li>phpservermon</li>
+        <li>Cacti</li>
+    </ul>
+    <aside class="notes">
+    </aside>        
+</section>
+<section>
+    <h2>phpservermon</h2>
+    <img src="images/php-server-monitor-example.png" style="max-width: 50%;"/>
+    <aside class="notes">
+    </aside>        
+</section>    
+<section>
+    <h3>Monitoring - Services</h3>    
+    <ul>
+        <li>UptimeRobot</li>
+        <li>Montastic</li>
+        <li>Datadog</li>
+        <li>New relic</li>
+    </ul>
+    <aside class="notes">
+    </aside>        
+</section>
+<section>        
+    <h3>Joomla Monitoring</h3>
+    <ul>
+        <li>Watchfu.ly</li>
+        <li>MyJoomla</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section>         
+
+
+
+<section data-background-image="images/cacti/small_DSC09515.JPG">
+    <h1>Automated Testing</h1>
+</section>
+<section>
+    <h2>Automated testing</h2>
+    <p>A whole talk in itself</p>
+    <ul>
+        <li>Unit testing</li>
+        <li>Acceptence testing</li>
+        <li>Integration testing</li>
+        <li>Regression testing</li>
+        <li>Performance testing</li>
+    </ul>
+    
+    <aside class="notes">
+    </aside>
+</section>   
+
+
+
+<section data-background-image="images/cacti/small_DSC09606.JPG">
+    <h1>CI / CD platforms</h1>
+</section>
+
+<section>
+    <h2>CI / CD on platforms</h2>
+    <ul>
+        <li>Gitlab</li>
+        <li>Github</li>
+        <li>Bitbucket</li>
+        <li>Assembla</li>
+        <li>Atlassian</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section>  
+
+<section>
+    <img src="images/gitlab_logo.png" style="max-width: 50%;"/>
+    <ul>
+        <li>Pipelines feature, great taskrunner</li>
+        <li>Runner for scaling</li>
+        <li>Nice Jenkins integration</li>
+        <li>Free private repos</li>
+    </ul>        
+    <aside class="notes">
+    </aside>
+</section>     
+
+
+<!--
+sudo apt-get install imagemagick --fix-missing
+
+convert -negate github.png github_inv.png 
+
+<img src="images/octocat.png" style="max-width: 20%;"/> 
+-->
+
+<section>
+    <img src="images/github.png" style="max-width: 70%;"/> 
+    <br/>
+    <ul>
+        <li>Limited CI/CD features</li>
+        <li>Lots of integrations</li>
+    </ul>
+    <aside class="notes">
+    </aside>
+</section>   
+
+<section>
+    <img src="images/atlassian.png" style="max-width: 50%;"/>
+
+
+    <p>Bitbucket</p>   
+    <ul>
+        <li>Pipelines feature, great taskrunner</li>
+        <li>Good docker support</li>
+        <li>Free private repos</li>
+    </ul>       
+    
+    <p>Bamboo</p>   
+    <ul>
+        <li>Full CI / CD solution</li>
+    </ul>      
+    <aside class="notes">
+        overlapping Atlassian services
+    </aside>
+</section>   
+
+<section>
+    <img src="images/assembla.png" style="max-width: 70%;"/> 
+    <ul>
+        <li>Limited CI/CD features</li>
+        <li>Nice AWS integration</li>
+        <li>Handy SSH and FTP options</li>
+    </ul>        
+    <aside class="notes">
+    </aside>
+</section>       
+
+<section>
+    <h2>Other options...</h2>
+    <ul>
+        <li>Jenkins.io</li>
+        <li>CircleCI</li>
+        <li>Teamcity</li>
+        <li>Go.cd</li>
+        <li>...and a few others</li>
+    </ul>        
+    <aside class="notes">
+    </aside>
+</section> 
+
+
+
+
+
+
+
+<section data-background-image="images/cacti/small_DSC09491.JPG">
+    <h1>Questions...?</h1>
+</section>
+
+<section data-background-image="images/cacti/small_DSC09516.JPG">
+    <h2>Notes...</h2>
+    <p>Examples at https://github.com/AndyGaskell/J_and_Beyond_2017</p>
+    <p>Any questions, just ask, or DM me on Twitter @AndyGasman</p>
+</section>
+
+<section data-background-image="images/cacti/small_DSC09464.JPG">
+    <h1>Shout out!</h1>
+    <h2>Huge thanks to Robert and the team for making J & Beyond an awsome thing.</h2>
+</section>
+
+<section data-background-image="images/cacti/small_DSC09530.JPG">
+    <h1>Thanks :)</h1>
+</section>
+
+
+
+
+
+
+
+
+<!--
+base
+<section>
+    <h2>Blah...</h2>
+    <p>Blah...</p>
+    <pre><code>blah code</code></pre>
+    <ul>
+        <li>list 1</li>
+        <li>list 2</li>
+    </ul>
+    <aside class="notes">
+
+    </aside>
+</section>    
+-->
+
+            </div>
+        </div>
+        <script src="reveal.js/lib/js/head.min.js"></script>
+        <script src="reveal.js/js/reveal.js"></script>
+        <script>
+            // More info https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                transition: "slide", // none/fade/slide/convex/concave/zoom
+
+                // More info https://github.com/hakimel/reveal.js#dependencies
+                dependencies: [
+                    { src: "reveal.js/lib/js/classList.js", condition: function() { return !document.body.classList; } },
+                    { src: "reveal.js/plugin/markdown/marked.js", condition: function() { return !!document.querySelector( "[data-markdown]" ); } },
+                    { src: "reveal.js/plugin/markdown/markdown.js", condition: function() { return !!document.querySelector( "[data-markdown]" ); } },
+                    { src: "reveal.js/plugin/highlight/highlight.js", async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: "reveal.js/plugin/zoom-js/zoom.js", async: true },
+                    { src: "reveal.js/plugin/notes/notes.js", async: true }
+                ]
+            });
+        </script>
+    </body>
+</html>

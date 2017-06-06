@@ -1,0 +1,24 @@
+<xml version="1.0" encoding="UTF-8"?>
+  <unite scriptong="01_default">
+    <siteInfo>
+      <package>base.jpa</package>
+      <deletePackage>0</deletePackage>
+      <localLog>MY_SYSNAME.log</localLog>
+      <emailSysop>1</emailSysop>
+      <name>MY_SITE_NAME</name>
+      <email>email@example.com</email>
+      <absolutepath>MY_SITE_DIR</absolutepath>
+    </siteInfo>
+    <databaseInfo>
+      <database name="site">
+        <changecollation>0</changecollation>
+        <dbdriver>mysqli</dbdriver>
+        <dbhost>localhost</dbhost>
+        <dbuser>MY_DB_USERNAME</dbuser>
+        <dbpass>MY_DB_PASSWORD</dbpass>
+        <dbname>MY_DB_NAME</dbname>
+        <dbprefix>MY_PREFIX</dbprefix>
+      </database>
+    </databaseInfo>
+  </unite>
+</xml>
