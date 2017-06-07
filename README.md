@@ -3,6 +3,9 @@
 ## What?
 
 Slides and examples from my talk at J & Beyond 2017
+* If you'd like to simply view the slides, go to http://www.ssofb.co.uk/slides/J_and_Beyond_2017
+* You can watch the talk on YouTube at https://www.youtube.com/watch?v=H5JgIQTLoO0
+
 
 ## Into: Your Joomla dev-ops, ci/cd toolbox
 
