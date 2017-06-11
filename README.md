@@ -1,4 +1,4 @@
-# J and Beyond 2017 talk - Your Joomla dev-ops, ci/cd toolbox
+# J and Beyond 2017 talk - Your Joomla dev-ops, CI/CD toolbox
 
 ## What?
 
