@@ -7,7 +7,7 @@ Slides and examples from my talk at J & Beyond 2017
 * You can watch the talk on YouTube at https://www.youtube.com/watch?v=H5JgIQTLoO0
 
 
-## Into: Your Joomla dev-ops, ci/cd toolbox
+## Intro: Your Joomla dev-ops, ci/cd toolbox
 
 This talk will provide a gourmet buffet of information and ideas for dev-ops, continuous integration and continuous deployment.  It'll include a good spread of practical details on tools and systems, and their use with Joomla, that you can take home and try with your Joomla development and deployment.  It'll include, among other aspects...
 
